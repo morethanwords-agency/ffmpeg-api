@@ -51,7 +51,6 @@ function extract(req,res,next) {
             case "1":
                 ffmpegParams.outputOptions.push(`-vf fps=${fps}`);
                 ffmpegParams.outputOptions.push(`-f image2`);
-                ffmpegParams.outputOptions.push(`-vframes 1`);
                 break;
             default:
                 ffmpegParams.outputOptions.push(`-vf fps=${fps}`);
