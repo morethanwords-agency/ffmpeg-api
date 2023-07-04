@@ -48,7 +48,7 @@ function extract(req,res,next) {
         format = "png"
         ffmpegParams.outputOptions=[];
         switch (preset) {
-            case "preset-1":
+            case "1":
                 ffmpegParams.outputOptions.push(`-vf scale='min(400, iw):min(400, ih)':force_original_aspect_ratio=decrease`);
                 ffmpegParams.outputOptions.push(`-f image2`);
                 ffmpegParams.outputOptions.push(`-vframes 1`);
