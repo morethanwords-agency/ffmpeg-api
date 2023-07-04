@@ -49,7 +49,7 @@ function extract(req,res,next) {
         ffmpegParams.outputOptions=[];
         switch (preset) {
             case "1":
-                ffmpegParams.outputOptions.push(`-vf fps=${fps}`);
+                ffmpegParams.outputOptions.push(`-vf scale=720:400:force_original_aspect_ratio=decrease`);
                 ffmpegParams.outputOptions.push(`-f image2`);
                 break;
             default:
