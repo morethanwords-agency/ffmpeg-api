@@ -59,6 +59,13 @@ FFMPEG API is provided as Docker image for easy consumption.
 * When running on Docker/Kubernetes, port binding can be different than default 3000. Use _EXTERNAL_PORT_ to set up external port in returned URLs in extracted images JSON:
 ** `docker run -it --rm -p 3001:3000 -e EXTERNAL_PORT=3001 kazhar/ffmpeg-api`
 
+=== Example of my case
+
+```bash
+sudo mkdir /tmp/ffmpeg-api
+sudo chmod 777 /tmp/ffmpeg-api
+sudo docker run -d -it -p 3000:3000 -v /tmp/ffmpeg-api:/tmp -e KEEP_ALL_FILES=true gnh1201/ffmpeg-api
+```
 
 == Usage
 
