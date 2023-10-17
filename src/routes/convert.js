@@ -66,7 +66,7 @@ function convert(req,res,next) {
     {
         ffmpegParams.outputOptions=[
             '-codec:v libx264',
-            '-profile:v high',
+            '-profile:v high444',
             '-r 15',
             '-crf 23',
             '-preset ultrafast',
