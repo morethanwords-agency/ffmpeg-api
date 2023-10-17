@@ -67,7 +67,7 @@ git clone https://github.com/gnh1201/ffmpeg-api
 docker build -t gnh1201/ffmpeg-api .
 sudo mkdir /var/cache/ffmpeg-api
 sudo chmod -R 777 /var/cache/ffmpeg-api
-sudo docker run -itd --rm -p 3000:3000 -v /var/cache/ffmpeg-api:/tmp -e KEEP_ALL_FILES=true gnh1201/ffmpeg-api
+sudo docker run -itd --rm -p 3000:3000 -v /var/cache/ffmpeg-api:/tmp -e KEEP_ALL_FILES=true -e LOG_LEVEL=debug gnh1201/ffmpeg-api
 ```
 
 == Usage
