@@ -186,9 +186,10 @@ function extract(req,res,next) {
                         logger.debug("file: " + file);
                         var fileJson={};
                         fileJson["name"] = file;
-                        fileJson[`url`] = `${req.protocol}://${req.hostname}:${externalPort}${req.baseUrl}/download/${file}`;
-                        filesArray.push(fileJson);                    
-                    }             
+                        fileJson["url"] = `${req.protocol}://${req.hostname}:${externalPort}${req.baseUrl}/download/${file}`;
+                        fileJson["base64"] = readFileAsync(`/tmp/${file}`, { encoding: 'base64' });
+                        filesArray.push(fileJson);
+                    }
                     responseJson["files"] = filesArray;
                     res.status(200).send(responseJson);
 
