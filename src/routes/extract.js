@@ -187,7 +187,7 @@ function extract(req,res,next) {
                         var fileJson={};
                         fileJson["name"] = file;
                         fileJson["url"] = `${req.protocol}://${req.hostname}:${externalPort}${req.baseUrl}/download/${file}`;
-                        fileJson["base64"] = readFileAsync(`/tmp/${file}`, { encoding: 'base64' });
+                        fileJson["base64"] = fs.readFileSync(`/tmp/${file}`, { encoding: 'base64' });
                         filesArray.push(fileJson);
                     }
                     responseJson["files"] = filesArray;
