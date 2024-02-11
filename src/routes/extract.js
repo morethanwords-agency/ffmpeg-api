@@ -41,14 +41,22 @@ function extract(req,res,next) {
     let fps = req.query.fps || 1;
     //compress = zip or gzip
     let compress = req.query.compress || "none";
+    let download = req.query.download || "no";
     let ffmpegParams ={};
     var format = "png";
     if (extract === "images"){
         format = "png"
-        ffmpegParams.outputOptions=[];
-        ffmpegParams.outputOptions.push(`-vf fps=${fps},scale=720:400:force_original_aspect_ratio=decrease`);
-        ffmpegParams.outputOptions.push(`-f image2`);
-        ffmpegParams.outputOptions.push(`-frames:v 1`);
+        if (download === "no") {
+            ffmpegParams.outputOptions=[
+                `-vf fps=${fps}`
+            ];
+        } else {
+            ffmpegParams.outputOptions=[
+                `-vf fps=${fps},scale=720:400:force_original_aspect_ratio=decrease`,
+                `-f image2`,
+                `-frames:v 1`
+            ];
+        }
     }
     if (extract === "audio"){
         format = "wav"
@@ -187,12 +195,14 @@ function extract(req,res,next) {
                         var fileJson={};
                         fileJson["name"] = file;
                         fileJson["url"] = `${req.protocol}://${req.hostname}:${externalPort}${req.baseUrl}/download/${file}`;
-                        fileJson["base64"] = fs.readFileSync(`/tmp/${file}`, { encoding: 'base64' });
                         filesArray.push(fileJson);
                     }
                     responseJson["files"] = filesArray;
-                    res.status(200).send(responseJson);
-
+                    if (download === "no") {
+                        res.status(200).send(responseJson);
+                    } else {
+                        return utils.downloadFile(`/tmp/${filesArray[0].name}`,null,req,res,next);
+                    }
                 }
             })
             .run();
