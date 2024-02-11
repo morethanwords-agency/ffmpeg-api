@@ -41,20 +41,14 @@ function extract(req,res,next) {
     let fps = req.query.fps || 1;
     //compress = zip or gzip
     let compress = req.query.compress || "none";
-    let preset = req.query.preset || "default";
     let ffmpegParams ={};
     var format = "png";
     if (extract === "images"){
         format = "png"
         ffmpegParams.outputOptions=[];
-        switch (preset) {
-            case "1":
-                ffmpegParams.outputOptions.push(`-vf fps=${fps},scale=720:400:force_original_aspect_ratio=decrease`);
-                ffmpegParams.outputOptions.push(`-f image2`);
-                break;
-            default:
-                ffmpegParams.outputOptions.push(`-vf fps=${fps}`);
-        }
+        ffmpegParams.outputOptions.push(`-vf fps=${fps},scale=720:400:force_original_aspect_ratio=decrease`);
+        ffmpegParams.outputOptions.push(`-f image2`);
+        ffmpegParams.outputOptions.push(`-frames:v 1`);
     }
     if (extract === "audio"){
         format = "wav"
