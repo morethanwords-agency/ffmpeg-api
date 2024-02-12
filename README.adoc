@@ -4,6 +4,7 @@ A web service for converting audio/video/image files using FFMPEG.
 
 Based on:
 
+* https://github.com/samisalkosuo/ffmpeg-api
 * https://github.com/surebert/docker-ffmpeg-service
 * https://github.com/jrottenberg/ffmpeg 
 * https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
@@ -22,7 +23,8 @@ FFMPEG API is provided as Docker image for easy consumption.
 ** Query param: `mono=no` - Returns audio track, all channels.
 * `POST /video/extract/images` - Extract images from POSTed video file as PNG. Default FPS is 1. Returns JSON that includes download links to extracted images.
 ** Query param: `compress=zip|gzip` - Returns extracted images as _zip_ or _tar.gz_ (gzip).
-** Query param: `fps=2` - Extract images using specified FPS. 
+** Query param: `fps=2` - Extract images using specified FPS.
+** Query param: `download=yes` - Downloads extracted image file and deletes it from server, immediately.
 * `GET /video/extract/download/:filename` - Downloads extracted image file and deletes it from server.
 ** Query param: `delete=no` - does not delete file.
 * `POST /probe` - Probe media file, return JSON metadata.
