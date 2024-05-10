@@ -66,7 +66,8 @@ function convert(req,res,next) {
     {
         ffmpegParams.outputOptions=[
             '-codec:v libx264',
-            '-profile:v high444',
+            //'-profile:v high444'  // for Chrome/Chromium only
+            '-profile:v high',   // for FireFox, Safari
             '-r 15',
             '-crf 23',
             '-preset ultrafast',
@@ -74,6 +75,7 @@ function convert(req,res,next) {
             '-maxrate 500k',
             '-bufsize 1000k',
             '-vf scale=-2:640',
+            '-pix_fmt yuv420p',   // for FireFox, Safari
             '-threads 8',
             '-codec:a libfdk_aac',
             '-b:a 128k',
