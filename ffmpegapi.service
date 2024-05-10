@@ -7,6 +7,8 @@ After=network.target
 Type=simple
 User=ffmpegapi
 Group=ffmpegapi
+Environment="KEEP_ALL_FILES=false"
+Environment="LOG_LEVEL=debug"
 WorkingDirectory=/home/ffmpegapi
 ExecStart=/usr/local/bin/node app.js
 Restart=on-failure
