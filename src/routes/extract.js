@@ -52,8 +52,8 @@ function extract(req,res,next) {
             ];
         } else {
             ffmpegParams.outputOptions=[
-                `-vf fps=${fps},scale=720:400:force_original_aspect_ratio=decrease`,
-                `-f image2`,
+                `-vf fps=${fps},scale=-2:640:force_original_aspect_ratio=decrease`,
+                //`-f image2`,
                 `-frames:v 1`
             ];
         }
