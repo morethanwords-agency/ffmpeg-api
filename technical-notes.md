@@ -31,8 +31,9 @@ cd build
 ../configure --enable-gpl --enable-libx264 --enable-nonfree --enable-libfdk-aac
 make
 make install
-#ln -s /usr/local/bin/ffmpeg /usr/bin/ffmpeg  # Or add /usr/local/bin to PATH variable
 ```
+
+The default installation paths are `/usr/local/bin` (for binaries) and `/usr/local/lib` (for libraries), so appropriate configuration of `ld` (aka. `ldconfig`) and environment variables (such as `PATH` and `LD_LIBRARY_PATH`) may be necessary.
 
 ## Report abuse
 * ActivityPub [@gnh1201@catswords.social](https://catswords.social/@gnh1201)
