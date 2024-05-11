@@ -1,5 +1,5 @@
 [Unit]
-Description=ffmpeg-api is the web-based media extraction and conversion tool with FFmpeg
+Description=ffmpeg-api is the web-based media extraction and conversion API with FFmpeg
 Documentation=https://github.com/gnh1201/ffmpeg-api
 After=network.target
 
