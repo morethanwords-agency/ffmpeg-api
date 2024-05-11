@@ -18,7 +18,7 @@ tar xvf ffmpeg-7.0.tar.xz
 cd FFmpeg-7.0
 mkdir build
 cd build
-../configure  --disable-static --enable-shared --enable-gpl --enable-libx264 --enable-nonfree
+../configure  --enable-gpl --enable-libx264 --enable-nonfree --enable-libfdk-aac
 make
 make install
 #ln -s /usr/local/bin/ffmpeg /usr/bin/ffmpeg  # Or add /usr/local/bin to PATH variable
