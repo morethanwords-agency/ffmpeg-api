@@ -35,6 +35,9 @@ make install
 
 The default installation paths are `/usr/local/bin` (for binaries) and `/usr/local/lib` (for libraries), so appropriate configuration of `ld` (aka. `ldconfig`) and environment variables (such as `PATH` and `LD_LIBRARY_PATH`) may be necessary.
 
+## Docker Hub
+* [gnh1201/ffmpeg-api is available in Docker Hub](https://hub.docker.com/r/gnh1201/ffmpeg-api)
+
 ## Report abuse
 * ActivityPub [@gnh1201@catswords.social](https://catswords.social/@gnh1201)
 * abuse@catswords.net
