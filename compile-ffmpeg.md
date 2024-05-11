@@ -21,6 +21,7 @@ cd build
 ../configure  --disable-static --enable-shared --enable-gpl --enable-libx264 --enable-nonfree
 make
 make install
+#ln -s /usr/local/bin/ffmpeg /usr/bin/ffmpeg  # Or add to PATH variable
 ```
 
 ## Report abuse
