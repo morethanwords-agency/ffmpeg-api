@@ -4,8 +4,9 @@
 The high444 profile of the H264 codec is not supported in the latest version of Firefox and some Safari releases as of May 2024. In this project, we included the option `-fix_fmt yuv420p` along with the `high` profile.
 
 More informations:
-* https://trac.ffmpeg.org/wiki/Chroma%20Subsampling
-* https://bugzilla.mozilla.org/show_bug.cgi?id=1130450
+
+* [Chroma Subsampling (trac.ffmpeg.org)](https://trac.ffmpeg.org/wiki/Chroma%20Subsampling)
+* [1130450 - Some MP4 videos don't play because they can't be decoded. (bugzilla.mozilla.org)](https://bugzilla.mozilla.org/show_bug.cgi?id=1130450)
 
 ## Compile FFmpeg for ffmpeg-api
 
