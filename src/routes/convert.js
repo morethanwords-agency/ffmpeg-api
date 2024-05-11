@@ -77,8 +77,8 @@ function convert(req,res,next) {
             '-vf scale=-2:640',
             '-pix_fmt yuv420p',   // for FireFox, Safari
             '-threads 8',
-            //'-codec:a libfdk_aac',   // non-free
-            '-codec:a aac',
+            '-codec:a libfdk_aac',   // no GPL
+            //'-codec:a aac',   // GPL
             '-b:a 128k',
         ];
     }
