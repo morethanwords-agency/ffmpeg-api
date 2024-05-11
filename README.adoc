@@ -141,7 +141,10 @@ sudo docker run -itd --rm -p 127.0.0.1:3000:3000 -v /var/cache/ffmpeg-api:/tmp -
 * https://github.com/gnh1201/topic-activitypub
 * https://gist.github.com/gnh1201/1ba49e0e80a11237038900bf8abfa434
 
+=== Techinical notes
+* link:./techinial-notes.md[Techinical notes for ffmpeg-api]
+
 == Report abuse
 
-* ActivityPub @gnh1201@catswords.social https://catswords.social/@gnh1201
+* ActivityPub https://catswords.social/@gnh1201[@gnh1201@catswords.social]
 * abuse@catswords.net
