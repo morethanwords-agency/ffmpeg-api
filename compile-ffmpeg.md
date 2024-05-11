@@ -4,7 +4,7 @@ This article is an FFmpeg compilation guide that is used as a reference when you
 
 ## Required packages
 * X264-devel (yum), libx264-dev (apt): available in major Linux distributions
-* [mstorsjo/fdk-aac](https://github.com/mstorsjo/fdk-aac) (No GPL, Need compile from the source code)
+* [Fraunhofer FDK AAC](https://github.com/mstorsjo/fdk-aac) (No GPL, Need compile from the source code)
 
 ## Download FFmpeg source code
 * https://ffmpeg.org/download.html
