@@ -3,6 +3,8 @@
 ## high444 profile of the H264 codec
 The high444 profile of the H264 codec is not supported in the latest version of Firefox and some Safari releases as of May 2024. In this project, we included the option `-fix_fmt yuv420p` along with the `high` profile.
 
+* More information: https://trac.ffmpeg.org/wiki/Chroma%20Subsampling
+
 ## Compile FFmpeg for ffmpeg-api
 
 This article is an FFmpeg compilation guide that is used as a reference when you want to run it in a non-container environment.
