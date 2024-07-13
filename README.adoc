@@ -145,6 +145,6 @@ sudo docker run -itd --rm -p 127.0.0.1:3000:3000 -v /var/cache/ffmpeg-api:/tmp -
 * link:./technical-notes.md[Techinical notes for ffmpeg-api]
 
 == Report abuse
-
-* ActivityPub https://catswords.social/@gnh1201[@gnh1201@catswords.social]
 * abuse@catswords.net
+* ActivityPub https://catswords.social/@gnh1201[@gnh1201@catswords.social]
+* https://teams.live.com/l/community/FEACHncAhq8ldnojAI[Join Catswords on Microsoft Teams]
