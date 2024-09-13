@@ -41,4 +41,4 @@ The default installation paths are `/usr/local/bin` (for binaries) and `/usr/loc
 ## Report abuse
 * ActivityPub [@gnh1201@catswords.social](https://catswords.social/@gnh1201)
 * abuse@catswords.net
-* https://teams.live.com/l/community/FEACHncAhq8ldnojAI[Join Catswords on Microsoft Teams]
+* [Join Catswords on Microsoft Teams](https://teams.live.com/l/community/FEACHncAhq8ldnojAI)
