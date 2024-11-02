@@ -11,6 +11,8 @@ Based on:
 
 FFMPEG API is provided as Docker image for easy consumption.
 
+https://catswords-oss.rdbl.io/1274143468/3500729784[Use cases and troubleshooting for FFMPEG API (catswords-oss.rdbl.io)]
+
 == Endpoints
 
 * `GET /` - API Readme.
@@ -135,14 +137,6 @@ sudo mkdir /var/cache/ffmpeg-api
 sudo chmod -R 777 /var/cache/ffmpeg-api
 sudo docker run -itd --rm -p 127.0.0.1:3000:3000 -v /var/cache/ffmpeg-api:/tmp -e KEEP_ALL_FILES=false -e LOG_LEVEL=debug gnh1201/ffmpeg-api # OR `-p 0.0.0.0:3000:3000`
 ```
-
-=== Example of applications
-
-* https://github.com/gnh1201/topic-activitypub
-* https://gist.github.com/gnh1201/1ba49e0e80a11237038900bf8abfa434
-
-=== Techinical notes
-* link:./technical-notes.md[Techinical notes for ffmpeg-api]
 
 == Report abuse
 * abuse@catswords.net
