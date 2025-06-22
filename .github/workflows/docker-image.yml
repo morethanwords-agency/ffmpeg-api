@@ -21,7 +21,6 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag gnh1201/ffmpeg-api:latest
-
+        run: docker build . --file Dockerfile --tag morethanwordsagency/ffmpeg-api:latest
       - name: Push Docker image to DockerHub
         run: docker push morethanwordsagency/ffmpeg-api:latest
