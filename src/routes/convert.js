@@ -39,7 +39,7 @@ function convert(req, res, next) {
     let conversion = res.locals.conversion;
     logger.debug(`path: ${req.path}, conversion: ${conversion}, format: ${format}`);
 
-    const userOptions = req.body?.options || {};
+    const userOptions = (req.body && req.body.options) ? req.body.options : {};
     const bitrate = userOptions.bitrate || '800k';
     const bufsize = userOptions.bufsize || bitrate;
     const audiobitrate = userOptions.audiobitrate || '96k';
