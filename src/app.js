@@ -22,6 +22,14 @@ process.on('SIGTERM', handle);
 
 app.use(compression());
 
+// ✅ Add body parsers for JSON and URL-encoded forms
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ✅ Додай підтримку application/json і form-urlencoded
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 //routes to handle file upload for all POST methods
 var upload = require('./routes/uploadfile.js');
 app.use(upload);
