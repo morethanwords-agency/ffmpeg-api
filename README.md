@@ -6,7 +6,7 @@ Based on:
 	•	https://github.com/samisalkosuo/ffmpeg-api
 	•	https://github.com/surebert/docker-ffmpeg-service
 	•	https://github.com/jrottenberg/ffmpeg
-	•	https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
+	•	https://github.com/fluent-ffmpeg/node-fluent-ffmpeg 
 
 FFMPEG API is provided as Docker image for easy consumption. See the use cases and troubleshooting (catswords-oss.rdbl.io).
 
