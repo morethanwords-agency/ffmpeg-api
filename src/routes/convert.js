@@ -39,7 +39,7 @@ function convert(req, res, next) {
     logger.debug(`path: ${req.path}, conversion: ${conversion}, format: ${format}`);
 
     const userOptions = (req.body && req.body.options) ? req.body.options : {};
-    const inputFile = req.body?.file || res.locals.savedFile;
+    const inputFile = (req.body && req.body.file) ? req.body.file : res.locals.savedFile;
 
     if (!inputFile) {
         return res.status(400).json({ error: 'No input file provided' });
