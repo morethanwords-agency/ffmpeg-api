@@ -1,44 +1,48 @@
-var express = require('express');
+const express = require('express');
 const ffmpeg = require('fluent-ffmpeg');
-const constants = require('../constants.js');
 const logger = require('../utils/logger.js');
 const utils = require('../utils/utils.js');
 
-var router = express.Router();
+const router = express.Router();
 
-// ➕ Remux endpoint
-router.post('/video/remux', (req, res, next) => {
-    const inputFile = req.body?.file || res.locals.savedFile;
-    const userOptions = req.body?.options || {};
+router.post('/', function (req, res, next) {
+    const inputFile = (req.body && req.body.file) || res.locals.savedFile;
+    const userOptions = (req.body && req.body.options) || {};
 
     if (!inputFile) {
         return res.status(400).json({ error: 'No input file provided' });
     }
 
-    const copyVideo = userOptions.copyVideo !== false; // default true
-    const copyAudio = userOptions.copyAudio !== false; // default true
-
-    const outputOptions = [
-        ...(copyVideo ? ['-c:v copy'] : []),
-        ...(copyAudio ? ['-c:a copy'] : []),
-        '-movflags +faststart'
-    ];
+    logger.debug(`Remuxing ${inputFile} with options: ${JSON.stringify(userOptions)}`);
 
     const outputFile = inputFile + '-remux.mp4';
 
-    logger.debug(`Remuxing file: ${inputFile}`);
-    logger.debug(`FFmpeg options: ${outputOptions.join(' ')}`);
+    const ffmpegCommand = ffmpeg(inputFile);
 
-    let ffmpegCommand = ffmpeg(inputFile);
+    // If copyVideo is true → copy video stream
+    if (userOptions.copyVideo) {
+        ffmpegCommand.videoCodec('copy');
+    }
+
+    // If copyAudio is true → copy audio stream
+    if (userOptions.copyAudio) {
+        ffmpegCommand.audioCodec('copy');
+    }
+
+    const outputOptions = [];
+
+    if (userOptions.movflags) {
+        outputOptions.push('-movflags', userOptions.movflags);
+    }
+
     ffmpegCommand
-        .renice(constants.defaultFFMPEGProcessPriority)
         .outputOptions(outputOptions)
         .on('error', function (err) {
-            logger.error(`${err}`);
-            utils.deleteFile(inputFile);
-            res.status(500).json({ error: `${err}` });
+            logger.error('Remux error: ' + err.message);
+            return res.status(500).json({ error: err.message });
         })
         .on('end', function () {
+            logger.debug(`Remux complete → ${outputFile}`);
             utils.deleteFile(inputFile);
             return utils.downloadFile(outputFile, null, req, res, next);
         })
