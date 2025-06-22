@@ -6,80 +6,62 @@ const all_routes = require('express-list-endpoints');
 const logger = require('./utils/logger.js');
 const constants = require('./constants.js');
 
-fileSizeLimit = constants.fileSizeLimit;
-timeout = 3600000;
+const fileSizeLimit = constants.fileSizeLimit;
+const timeout = 3600000;
 
-// catch SIGINT and SIGTERM and exit
-// Using a single function to handle multiple signals
+// Catch SIGINT and SIGTERM and exit
 function handle(signal) {
     logger.info(`Received ${signal}. Exiting...`);
-    process.exit(1)
-  }  
-//SIGINT is typically CTRL-C
+    process.exit(1);
+}
 process.on('SIGINT', handle);
-//SIGTERM is sent to terminate process, for example docker stop sends SIGTERM
 process.on('SIGTERM', handle);
 
 app.use(compression());
 
-// ✅ Add body parsers for JSON and URL-encoded forms
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Додай підтримку application/json і form-urlencoded
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-//routes to handle file upload for all POST methods
-var upload = require('./routes/uploadfile.js');
-app.use(upload);
-
-//routes to convert audio/video/image files to mp3/mp4/jpg
-var convert = require('./routes/convert.js');
-app.use('/convert', convert);
-
-//routes to extract images or audio from video
-var extract = require('./routes/extract.js');
-app.use('/video/extract', extract);
-
-//routes to probe file info
-var probe = require('./routes/probe.js');
-app.use('/probe', probe);
+// Routes
+app.use(require('./routes/uploadfile.js'));
+app.use('/convert', require('./routes/convert.js'));
+app.use('/video/extract', require('./routes/extract.js'));
+app.use('/probe', require('./routes/probe.js'));
+app.use('/video/remux', require('./routes/remux.js')); // ✅ New route
 
 require('express-readme')(app, {
     filename: 'index.md',
     routes: ['/'],
 });
 
-const server = app.listen(constants.serverPort, function() {
+// Server
+const server = app.listen(constants.serverPort, function () {
     let host = server.address().address;
     let port = server.address().port;
-    logger.info('Server started and listening http://'+host+':'+port)
+    logger.info('Server started and listening http://' + host + ':' + port);
 });
 
-server.on('connection', function(socket) {
+server.on('connection', function (socket) {
     logger.debug(`new connection, timeout: ${timeout}`);
     socket.setTimeout(timeout);
     socket.server.timeout = timeout;
     server.keepAliveTimeout = timeout;
 });
 
-app.get('/endpoints', function(req, res) {
+// List all endpoints
+app.get('/endpoints', function (req, res) {
     res.status(200).send(all_routes(app));
-    //res.writeHead(200, {'content-type' : 'text/plain'});
-    //res.end("Endpoints:\n\n"+JSON.stringify(all_routes(app),null,2)+'\n');
 });
 
-app.use(function(req, res, next) {
-  res.status(404).send({error: 'route not found'});
+// 404 handler
+app.use(function (req, res, next) {
+    res.status(404).send({ error: 'route not found' });
 });
 
-
-//custom error handler to return text/plain and message only
-app.use(function(err, req, res, next){
+// Custom error handler
+app.use(function (err, req, res, next) {
     let code = err.statusCode || 500;
-    let message = err.message;
-    res.writeHead(code, {'content-type' : 'text/plain'});
+    res.writeHead(code, { 'content-type': 'text/plain' });
     res.end(`${err.message}\n`);
-    
 });
