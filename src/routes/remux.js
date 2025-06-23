@@ -7,7 +7,15 @@ const router = express.Router();
 
 router.post('/', function (req, res, next) {
     const inputFile = (req.body && req.body.file) || res.locals.savedFile;
-    const userOptions = (req.body && req.body.options) || {};
+    let userOptions = (req.body && req.body.options) || {};
+
+    if (typeof userOptions === 'string') {
+        try {
+            userOptions = JSON.parse(userOptions);
+        } catch (e) {
+            return res.status(400).json({ error: 'Invalid JSON in options' });
+        }
+    }
 
     if (!inputFile) {
         return res.status(400).json({ error: 'No input file provided' });
@@ -46,8 +54,15 @@ router.post('/', function (req, res, next) {
                 .audioCodec('aac')
                 .addOption('-preset', 'ultrafast')
                 .addOption('-crf', '28')
-                .addOption('-b:a', '128k')
-                .addOption('-b:v', '4000k')        
+                .addOption('-b:a', '128k');
+
+            if (userOptions.bit_rate) {
+                ffmpegCommand.addOption('-b:v', userOptions.bit_rate);
+            } else {
+                ffmpegCommand.addOption('-b:v', '4000k');
+            }
+
+            ffmpegCommand
                 .addOption('-pix_fmt', 'yuv420p')
                 .addOption('-movflags', '+faststart');
 
