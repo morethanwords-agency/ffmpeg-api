@@ -45,8 +45,9 @@ router.post('/', function (req, res, next) {
                 .videoCodec('libx264')
                 .audioCodec('aac')
                 .addOption('-preset', 'ultrafast')
-                .addOption('-crf', '23')
+                .addOption('-crf', '28')
                 .addOption('-b:a', '128k')
+                .addOption('-b:v', '4000k')        
                 .addOption('-pix_fmt', 'yuv420p')
                 .addOption('-movflags', '+faststart');
 
