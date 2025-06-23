@@ -3,6 +3,8 @@ const ffmpeg = require('fluent-ffmpeg');
 
 const logger = require('../utils/logger.js');
 const utils = require('../utils/utils.js');
+const constants = require('../constants.js'); // 🔹 додаємо constants
+const fileSizeLimit = constants.fileSizeLimit; // 🔹 отримуємо ліміт
 
 var router = express.Router();
 
@@ -18,9 +20,16 @@ router.post('/', function (req, res, next) {
         if (err) {
             next(err);
         } else {
-            // optional: do not delete if you're not uploading
-            // utils.deleteFile(savedFile);
-            res.status(200).send(metadata);
+            const fileSize = metadata.format?.size;
+            const needsCompression = fileSize && fileSize > fileSizeLimit;
+
+            logger.debug(`File size: ${fileSize} bytes, limit: ${fileSizeLimit}`);
+            res.status(200).send({
+                metadata,
+                needsCompression,
+                fileSize,
+                fileSizeLimit
+            });
         }
     });
 });
