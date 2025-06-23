@@ -65,6 +65,8 @@ router.post('/', function (req, res, next) {
             const audioBitrate = userOptions.audioBitrate || '128k';
             const videoBitrate = userOptions.bit_rate || '4000k';
 
+            logger.debug('movflags option:', userOptions.movflags);
+
             ffmpegCommand
                 .videoCodec(userOptions.videoCodec || 'libx264')
                 .audioCodec(userOptions.audioCodec || 'aac')
@@ -82,6 +84,9 @@ router.post('/', function (req, res, next) {
         } else {
             if (userOptions.copyVideo) ffmpegCommand.videoCodec('copy');
             if (userOptions.copyAudio) ffmpegCommand.audioCodec('copy');
+
+            logger.debug('movflags option:', userOptions.movflags);
+
             outputOptions.push('-movflags', userOptions.movflags || '+faststart');
             outputOptions.push('-fflags', '+genpts');
         }
