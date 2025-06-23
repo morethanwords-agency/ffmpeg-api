@@ -5,6 +5,11 @@ const utils = require('../utils/utils.js');
 
 const router = express.Router();
 
+function hasFlag(optionsArray, flag) {
+    if (!Array.isArray(optionsArray)) return false;
+    return optionsArray.some(opt => typeof opt === 'string' && opt.includes(flag));
+}
+
 router.post('/', function (req, res, next) {
     const inputFile = (req.body && req.body.file) || res.locals.savedFile;
     let userOptions = (req.body && req.body.options) || {};
@@ -38,7 +43,7 @@ router.post('/', function (req, res, next) {
             ffmpegCommand.videoFilters(`scale=${userOptions.width}:${userOptions.height}`);
         }
 
-        // Apply extra ffmpeg options if any
+        // Apply extra ffmpeg options if any (trimmed)
         if (Array.isArray(userOptions.ffmpegOptions)) {
             userOptions.ffmpegOptions = userOptions.ffmpegOptions.map(s => (typeof s === 'string' ? s.trim() : s));
             ffmpegCommand.addOptions(userOptions.ffmpegOptions);
@@ -60,33 +65,46 @@ router.post('/', function (req, res, next) {
         const shouldForceEncode = videoCodec === 'vp9';
         logger.debug(`Input video codec: ${videoCodec} → ${shouldForceEncode ? 're-encoding to H.264/AAC' : 'stream copy allowed'}`);
 
+        logger.debug('movflags option:', userOptions.movflags);
+
         if (shouldForceEncode) {
             const preset = userOptions.preset || 'ultrafast';
             const crf = typeof userOptions.crf !== 'undefined' ? userOptions.crf : 28;
             const audioBitrate = userOptions.audioBitrate || '128k';
             const videoBitrate = userOptions.bit_rate || '4000k';
 
-            logger.debug('movflags option:', userOptions.movflags);
+            if (!hasFlag(userOptions.ffmpegOptions, '-preset')) {
+                ffmpegCommand.addOption('-preset', preset);
+            }
+            if (!hasFlag(userOptions.ffmpegOptions, '-crf')) {
+                ffmpegCommand.addOption('-crf', crf);
+            }
+            if (!hasFlag(userOptions.ffmpegOptions, '-b:a')) {
+                ffmpegCommand.addOption('-b:a', audioBitrate);
+            }
+            if (!hasFlag(userOptions.ffmpegOptions, '-b:v')) {
+                ffmpegCommand.addOption('-b:v', videoBitrate);
+            }
+            if (!hasFlag(userOptions.ffmpegOptions, '-pix_fmt')) {
+                ffmpegCommand.addOption('-pix_fmt', 'yuv420p');
+            }
+            if (!hasFlag(userOptions.ffmpegOptions, '-movflags')) {
+                ffmpegCommand.addOption('-movflags', userOptions.movflags || '+faststart');
+            }
+            if (!hasFlag(userOptions.ffmpegOptions, '-fflags')) {
+                ffmpegCommand.addOption('-fflags', '+genpts');
+            }
+
+            if (shouldSetAspect && !hasFlag(userOptions.ffmpegOptions, '-aspect')) {
+                ffmpegCommand.addOption('-aspect', '9:16');
+            }
 
             ffmpegCommand
                 .videoCodec(userOptions.videoCodec || 'libx264')
-                .audioCodec(userOptions.audioCodec || 'aac')
-                .addOption('-preset', preset)
-                .addOption('-crf', crf)
-                .addOption('-b:a', audioBitrate)
-                .addOption('-b:v', videoBitrate)
-                .addOption('-pix_fmt', 'yuv420p')
-                .addOption('-movflags', userOptions.movflags || '+faststart')
-                .addOption('-fflags', '+genpts');
-
-            if (shouldSetAspect) {
-                ffmpegCommand.addOption('-aspect', '9:16');
-            }
+                .audioCodec(userOptions.audioCodec || 'aac');
         } else {
             if (userOptions.copyVideo) ffmpegCommand.videoCodec('copy');
             if (userOptions.copyAudio) ffmpegCommand.audioCodec('copy');
-
-            logger.debug('movflags option:', userOptions.movflags);
 
             outputOptions.push('-movflags', userOptions.movflags || '+faststart');
             outputOptions.push('-fflags', '+genpts');
