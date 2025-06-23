@@ -32,6 +32,17 @@ router.post('/', function (req, res, next) {
         }
 
         const ffmpegCommand = ffmpeg(inputFile);
+
+        // Apply scaling if requested
+        if (userOptions.width && userOptions.height) {
+            ffmpegCommand.videoFilters(`scale=${userOptions.width}:${userOptions.height}`);
+        }
+
+        // Apply extra ffmpeg options if any
+        if (Array.isArray(userOptions.ffmpegOptions)) {
+            ffmpegCommand.addOptions(userOptions.ffmpegOptions);
+        }
+
         const outputOptions = [];
 
         let videoCodec = null;
@@ -42,29 +53,28 @@ router.post('/', function (req, res, next) {
             videoCodec = videoStream.codec_name;
             const width = videoStream.width || 0;
             const height = videoStream.height || 0;
-            shouldSetAspect = height > width; // Only set aspect if portrait
+            shouldSetAspect = height > width;
         }
 
         const shouldForceEncode = videoCodec === 'vp9';
         logger.debug(`Input video codec: ${videoCodec} → ${shouldForceEncode ? 're-encoding to H.264/AAC' : 'stream copy allowed'}`);
 
         if (shouldForceEncode) {
-            ffmpegCommand
-                .videoCodec('libx264')
-                .audioCodec('aac')
-                .addOption('-preset', 'ultrafast')
-                .addOption('-crf', '28')
-                .addOption('-b:a', '128k');
-
-            if (userOptions.bit_rate) {
-                ffmpegCommand.addOption('-b:v', userOptions.bit_rate);
-            } else {
-                ffmpegCommand.addOption('-b:v', '4000k');
-            }
+            const preset = userOptions.preset || 'ultrafast';
+            const crf = typeof userOptions.crf !== 'undefined' ? userOptions.crf : 28;
+            const audioBitrate = userOptions.audioBitrate || '128k';
+            const videoBitrate = userOptions.bit_rate || '4000k';
 
             ffmpegCommand
+                .videoCodec(userOptions.videoCodec || 'libx264')
+                .audioCodec(userOptions.audioCodec || 'aac')
+                .addOption('-preset', preset)
+                .addOption('-crf', crf)
+                .addOption('-b:a', audioBitrate)
+                .addOption('-b:v', videoBitrate)
                 .addOption('-pix_fmt', 'yuv420p')
-                .addOption('-movflags', '+faststart');
+                .addOption('-movflags', userOptions.movflags || '+faststart')
+                .addOption('-fflags', '+genpts');
 
             if (shouldSetAspect) {
                 ffmpegCommand.addOption('-aspect', '9:16');
@@ -73,6 +83,7 @@ router.post('/', function (req, res, next) {
             if (userOptions.copyVideo) ffmpegCommand.videoCodec('copy');
             if (userOptions.copyAudio) ffmpegCommand.audioCodec('copy');
             outputOptions.push('-movflags', userOptions.movflags || '+faststart');
+            outputOptions.push('-fflags', '+genpts');
         }
 
         outputOptions.push('-map', '0:v:0', '-map', '0:a:0', '-map_metadata', '-1');
