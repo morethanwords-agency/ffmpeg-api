@@ -40,6 +40,7 @@ router.post('/', function (req, res, next) {
 
         // Apply extra ffmpeg options if any
         if (Array.isArray(userOptions.ffmpegOptions)) {
+            userOptions.ffmpegOptions = userOptions.ffmpegOptions.map(s => (typeof s === 'string' ? s.trim() : s));
             ffmpegCommand.addOptions(userOptions.ffmpegOptions);
         }
 
