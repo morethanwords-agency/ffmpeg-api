@@ -27,9 +27,14 @@ router.post('/', function (req, res, next) {
         const outputOptions = [];
 
         let videoCodec = null;
+        let shouldSetAspect = false;
+
         const videoStream = metadata.streams.find(s => s.codec_type === 'video');
         if (videoStream) {
             videoCodec = videoStream.codec_name;
+            const width = videoStream.width || 0;
+            const height = videoStream.height || 0;
+            shouldSetAspect = height > width; // Only set aspect if portrait
         }
 
         const shouldForceEncode = videoCodec === 'vp9';
@@ -39,15 +44,21 @@ router.post('/', function (req, res, next) {
             ffmpegCommand
                 .videoCodec('libx264')
                 .audioCodec('aac')
-                .addOption('-preset', 'veryfast')
+                .addOption('-preset', 'ultrafast')
                 .addOption('-crf', '23')
-                .addOption('-b:a', '128k');
+                .addOption('-b:a', '128k')
+                .addOption('-pix_fmt', 'yuv420p')
+                .addOption('-movflags', '+faststart');
+
+            if (shouldSetAspect) {
+                ffmpegCommand.addOption('-aspect', '9:16');
+            }
         } else {
             if (userOptions.copyVideo) ffmpegCommand.videoCodec('copy');
             if (userOptions.copyAudio) ffmpegCommand.audioCodec('copy');
+            outputOptions.push('-movflags', userOptions.movflags || '+faststart');
         }
 
-        outputOptions.push('-movflags', userOptions.movflags || '+faststart');
         outputOptions.push('-map', '0:v:0', '-map', '0:a:0', '-map_metadata', '-1');
 
         ffmpegCommand
