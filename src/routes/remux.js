@@ -15,7 +15,10 @@ router.post('/', function (req, res, next) {
 
     logger.debug(`Remuxing ${inputFile} with options: ${JSON.stringify(userOptions)}`);
 
-    const outputFile = inputFile + '-remux.mp4';
+    const path = require('path');
+    const ext = path.extname(inputFile); // ".mp4"
+    const base = inputFile.slice(0, -ext.length); // remove ".mp4" from the end
+    const outputFile = base + '-remux' + ext;
 
     const ffmpegCommand = ffmpeg(inputFile);
 
