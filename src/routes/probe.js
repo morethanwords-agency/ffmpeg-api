@@ -4,7 +4,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const logger = require('../utils/logger.js');
 const utils = require('../utils/utils.js');
 const constants = require('../constants.js'); // 🔹 додаємо constants
-const fileSizeLimit = constants.fileSizeLimit; // 🔹 отримуємо ліміт
+const fileSize = (metadata && metadata.format && metadata.format.size) ? metadata.format.size : 0;
 
 var router = express.Router();
 
