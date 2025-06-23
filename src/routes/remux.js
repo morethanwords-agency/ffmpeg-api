@@ -26,7 +26,11 @@ router.post('/', function (req, res, next) {
         const ffmpegCommand = ffmpeg(inputFile);
         const outputOptions = [];
 
-        const videoCodec = metadata.streams.find(s => s.codec_type === 'video')?.codec_name;
+        let videoCodec = null;
+        const videoStream = metadata.streams.find(s => s.codec_type === 'video');
+        if (videoStream) {
+            videoCodec = videoStream.codec_name;
+        }
 
         const shouldForceEncode = videoCodec === 'vp9';
         logger.debug(`Input video codec: ${videoCodec} → ${shouldForceEncode ? 're-encoding to H.264/AAC' : 'stream copy allowed'}`);
