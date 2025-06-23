@@ -29,16 +29,18 @@ router.post('/', function (req, res, next) {
         const videoCodec = metadata.streams.find(s => s.codec_type === 'video')?.codec_name;
 
         const shouldForceEncode = videoCodec === 'vp9';
-        logger.debug(`Input video codec: ${videoCodec} → ${shouldForceEncode ? 'will re-encode to libx264' : 'copy allowed'}`);
+        logger.debug(`Input video codec: ${videoCodec} → ${shouldForceEncode ? 're-encoding to H.264/AAC' : 'stream copy allowed'}`);
 
         if (shouldForceEncode) {
-            ffmpegCommand.videoCodec('libx264');
-        } else if (userOptions.copyVideo) {
-            ffmpegCommand.videoCodec('copy');
-        }
-
-        if (userOptions.copyAudio) {
-            ffmpegCommand.audioCodec('copy');
+            ffmpegCommand
+                .videoCodec('libx264')
+                .audioCodec('aac')
+                .addOption('-preset', 'veryfast')
+                .addOption('-crf', '23')
+                .addOption('-b:a', '128k');
+        } else {
+            if (userOptions.copyVideo) ffmpegCommand.videoCodec('copy');
+            if (userOptions.copyAudio) ffmpegCommand.audioCodec('copy');
         }
 
         outputOptions.push('-movflags', userOptions.movflags || '+faststart');
