@@ -3,8 +3,7 @@ const ffmpeg = require('fluent-ffmpeg');
 
 const logger = require('../utils/logger.js');
 const utils = require('../utils/utils.js');
-const constants = require('../constants.js'); // 🔹 додаємо constants
-const fileSize = (metadata && metadata.format && metadata.format.size) ? metadata.format.size : 0;
+const constants = require('../constants.js'); 
 
 var router = express.Router();
 
@@ -12,7 +11,7 @@ var router = express.Router();
 router.post('/', function (req, res, next) {
     let savedFile = req.body.file;
 
-    logger.debug(`Probing ${savedFile}`);
+    logger.debug('Probing ' + savedFile);
 
     var ffmpegCommand = ffmpeg(savedFile);
 
@@ -20,15 +19,20 @@ router.post('/', function (req, res, next) {
         if (err) {
             next(err);
         } else {
-            const fileSize = metadata.format?.size;
-            const needsCompression = fileSize && fileSize > fileSizeLimit;
+            var fileSize = 0;
+            if (metadata && metadata.format && metadata.format.size) {
+                fileSize = metadata.format.size;
+            }
 
-            logger.debug(`File size: ${fileSize} bytes, limit: ${fileSizeLimit}`);
+            var fileSizeLimit = constants.fileSizeLimit;
+            var needsCompression = fileSize > fileSizeLimit;
+
+            logger.debug('File size: ' + fileSize + ' bytes, limit: ' + fileSizeLimit);
             res.status(200).send({
-                metadata,
-                needsCompression,
-                fileSize,
-                fileSizeLimit
+                metadata: metadata,
+                needsCompression: needsCompression,
+                fileSize: fileSize,
+                fileSizeLimit: fileSizeLimit
             });
         }
     });
