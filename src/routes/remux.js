@@ -16,33 +16,48 @@ router.post('/', function (req, res, next) {
     logger.debug(`Remuxing ${inputFile} with options: ${JSON.stringify(userOptions)}`);
 
     const outputFile = inputFile.replace(/\.mp4$/, '') + `-${Date.now()}-remux.mp4`;
-    const ffmpegCommand = ffmpeg(inputFile);
 
-    const outputOptions = [];
+    ffmpeg.ffprobe(inputFile, (err, metadata) => {
+        if (err) {
+            logger.error('ffprobe error: ' + err.message);
+            return res.status(500).json({ error: 'Failed to analyze input file' });
+        }
 
-    // ⚡ Stream copy speeds up remuxing
-    if (userOptions.copyVideo) ffmpegCommand.videoCodec('copy');
-    if (userOptions.copyAudio) ffmpegCommand.audioCodec('copy');
+        const ffmpegCommand = ffmpeg(inputFile);
+        const outputOptions = [];
 
-    // ⚡ Safe faststart default for MP4 seeking in browsers
-    outputOptions.push('-movflags', userOptions.movflags || 'faststart');
+        const videoCodec = metadata.streams.find(s => s.codec_type === 'video')?.codec_name;
 
-    // ⚡ Optional: drop extra metadata and limit to main video/audio streams
-    outputOptions.push('-map', '0:v:0', '-map', '0:a:0', '-map_metadata', '-1');
+        const shouldForceEncode = videoCodec === 'vp9';
+        logger.debug(`Input video codec: ${videoCodec} → ${shouldForceEncode ? 'will re-encode to libx264' : 'copy allowed'}`);
 
-    ffmpegCommand
-        .outputOptions(outputOptions)
-        .on('start', commandLine => logger.debug(`FFmpeg started: ${commandLine}`))
-        .on('error', err => {
-            logger.error('Remux error: ' + err.message);
-            return res.status(500).json({ error: err.message });
-        })
-        .on('end', () => {
-            logger.debug(`Remux complete → ${outputFile}`);
-            utils.deleteFile(inputFile);
-            return utils.downloadFile(outputFile, null, req, res, next);
-        })
-        .save(outputFile);
+        if (shouldForceEncode) {
+            ffmpegCommand.videoCodec('libx264');
+        } else if (userOptions.copyVideo) {
+            ffmpegCommand.videoCodec('copy');
+        }
+
+        if (userOptions.copyAudio) {
+            ffmpegCommand.audioCodec('copy');
+        }
+
+        outputOptions.push('-movflags', userOptions.movflags || '+faststart');
+        outputOptions.push('-map', '0:v:0', '-map', '0:a:0', '-map_metadata', '-1');
+
+        ffmpegCommand
+            .outputOptions(outputOptions)
+            .on('start', commandLine => logger.debug(`FFmpeg started: ${commandLine}`))
+            .on('error', err => {
+                logger.error('Remux error: ' + err.message);
+                return res.status(500).json({ error: err.message });
+            })
+            .on('end', () => {
+                logger.debug(`Remux complete → ${outputFile}`);
+                utils.deleteFile(inputFile);
+                return utils.downloadFile(outputFile, null, req, res, next);
+            })
+            .save(outputFile);
+    });
 });
 
 module.exports = router;
